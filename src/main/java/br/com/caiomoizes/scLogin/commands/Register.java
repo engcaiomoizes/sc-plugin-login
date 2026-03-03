@@ -12,33 +12,37 @@ import org.jetbrains.annotations.NotNull;
 public class Register implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String @NotNull [] args) {
-        if (sender instanceof Player p) {
-            if (!p.hasPermission("register.use")) {
-                p.sendMessage(Component.text("Você não tem permissão para usar este comando.", NamedTextColor.RED));
-                return true;
-            }
+        if (!(sender instanceof Player p)) return true;
 
-            if (args.length == 0) return false;
+        if (LoginAPI.checkIsPremium(p.getName()).join()) {
+            p.sendMessage(Component.text("Contas originais não precisam de registro.", NamedTextColor.GREEN));
+            return true;
+        }
 
-            if (!LoginAPI.isRegistered(p)) {
-                String password = args[0];
+        if (!p.hasPermission("register.use")) {
+            p.sendMessage(Component.text("Você não tem permissão para usar este comando.", NamedTextColor.RED));
+            return true;
+        }
 
-                if (args.length < 2)
-                    p.sendMessage(Component.text("Digite a confirmação da senha.", NamedTextColor.GOLD));
-                else {
-                    String confirmaSenha = args[1];
+        if (LoginAPI.isRegistered(p)) {
+            p.sendMessage(Component.text("Você já está registrado!", NamedTextColor.LIGHT_PURPLE));
+            return true;
+        }
 
-                    if (password.equals(confirmaSenha)) {
-                        LoginAPI.register(p, password);
-                        p.sendMessage(Component.text("Você se registrou com sucesso!", NamedTextColor.GREEN));
-                        LoginAPI.logIn(p);
-                    } else {
-                        p.sendMessage(Component.text("As senhas não batem!", NamedTextColor.RED));
-                    }
-                }
-            } else {
-                p.sendMessage(Component.text("Você já está registrado!", NamedTextColor.LIGHT_PURPLE));
-            }
+        if (args.length < 2) {
+            p.sendMessage(Component.text("Use /register <password> <confirmPassword>", NamedTextColor.RED));
+            return false;
+        }
+
+        String password = args[0];
+        String confirmPassword = args[1];
+
+        if (password.equals(confirmPassword)) {
+            LoginAPI.register(p, password, false);
+            p.sendMessage(Component.text("Você se registrou com sucesso!", NamedTextColor.GREEN));
+            LoginAPI.logIn(p);
+        } else {
+            p.sendMessage(Component.text("As senhas não batem!", NamedTextColor.RED));
         }
 
         return true;

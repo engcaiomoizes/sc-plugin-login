@@ -1,4 +1,4 @@
-name: SnowCraftBR
+name: SCLogin
 version: '1.0-SNAPSHOT'
-main: br.com.caiomoizes.snowCraftBR.SnowCraftBR
+main: br.com.caiomoizes.scLogin.SCLogin
 api-version: '1.21'

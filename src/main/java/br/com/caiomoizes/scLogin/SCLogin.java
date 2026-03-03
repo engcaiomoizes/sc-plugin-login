@@ -2,6 +2,7 @@ package br.com.caiomoizes.scLogin;
 
 import br.com.caiomoizes.scLogin.commands.Login;
 import br.com.caiomoizes.scLogin.commands.Register;
+import br.com.caiomoizes.scLogin.commands.SwitchPassword;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -14,33 +15,41 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
+import java.sql.SQLException;
 import java.util.List;
 
 public final class SCLogin extends JavaPlugin {
 
     private static SCLogin instance;
-
-    private CustomConfig users;
+    private Database database;
 
     public static SCLogin getInstance() {
         return instance;
     }
 
-    public static void setInstance(SCLogin instance) {
-        SCLogin.instance = instance;
-    }
-
-    public CustomConfig getUsers() {
-        return this.users;
+    public Database getDatabase() {
+        return database;
     }
 
     @Override
     public void onEnable() {
-        setInstance(this);
+        instance = this;
 
-        Bukkit.getServer().getConsoleSender().sendMessage(Component.text("[SnowCraft] Ativado!", NamedTextColor.GREEN));
+        Bukkit.getServer().getConsoleSender().sendMessage(Component.text("[SC-Login] Ativado!", NamedTextColor.GREEN));
 
         saveDefaultConfig();
+
+        try {
+            database = new Database();
+
+            database.setup(getDataFolder());
+            getLogger().info("Conexão com SQLite estabelecida com sucesso!");
+        } catch (SQLException e) {
+            getLogger().severe("Não foi possível conectar ao SQLite! Desativando o plugin...");
+            e.printStackTrace();
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
 
         registerCommand(
                 "register",
@@ -58,17 +67,22 @@ public final class SCLogin extends JavaPlugin {
                 "/login <password>",
                 new Login()
         );
+        registerCommand(
+                "switchpassword",
+                "Trocar a senha da sua conta",
+                List.of("switchpassword", "switch-password", "switch", "switchpass", "switch-pass"),
+                "switchpassword.use",
+                "/switchpassword <newPassword> <confirmNewPassword>",
+                new SwitchPassword()
+        );
 
         PluginManager pm = Bukkit.getPluginManager();
-
-        this.users = new CustomConfig("users.yml");
-        this.users.get().options().copyDefaults(true);
-        this.users.save();
+        pm.registerEvents(new Events(this), this);
     }
 
     @Override
     public void onDisable() {
-        Bukkit.getServer().getConsoleSender().sendMessage(Component.text("[SnowCraft] Desativado!", NamedTextColor.RED));
+        Bukkit.getServer().getConsoleSender().sendMessage(Component.text("[SC-Login] Desativado!", NamedTextColor.RED));
     }
 
     public void registerCommand(String name, String description, List<String> aliases, String permission, String usage, CommandExecutor executor) {

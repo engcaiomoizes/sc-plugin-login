@@ -1,6 +1,9 @@
 plugins {
     id 'java'
     id("xyz.jpenilla.run-paper") version "2.3.1"
+    // Shadow 8.1.1 não suporta classes Java 21 (major 65).
+    // A partir da linha 8.3.x o plugin passa a suportar Java 21.
+    id("com.gradleup.shadow") version "8.3.10"
 }
 
 group = 'br.com.caiomoizes'
@@ -16,33 +19,37 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
+
+    implementation("org.mindrot:jbcrypt:0.4")
 }
 
-tasks {
-    runServer {
-        // Configure the Minecraft version for our task.
-        // This is the only required configuration besides applying the plugin.
-        // Your plugin's jar (or shadowJar if present) will be used automatically.
-        minecraftVersion("1.21")
-    }
+tasks.runServer {
+    minecraftVersion("1.21")
+}
+
+tasks.shadowJar {
+    // Isso remove o "-all" do nome do arquivo para facilitar
+    archiveClassifier.set("")
+
+    // Relocation: Move o BCrypt para dentro do seu pacote para evitar conflitos
+    relocate("org.mindrot.jbcrypt", "br.com.caiomoizes.scLogin.libs.jbcrypt")
 }
 
 def targetJavaVersion = 21
+
 java {
     def javaVersion = JavaVersion.toVersion(targetJavaVersion)
     sourceCompatibility = javaVersion
     targetCompatibility = javaVersion
-    if (JavaVersion.current() < javaVersion) {
-        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(targetJavaVersion)
     }
 }
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
-
-    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
-        options.release.set(targetJavaVersion)
-    }
+    options.release.set(targetJavaVersion)
 }
 
 processResources {
