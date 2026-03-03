@@ -1,7 +1,7 @@
-package br.com.caiomoizes.snowCraftBR;
+package br.com.caiomoizes.scLogin;
 
-import br.com.caiomoizes.snowCraftBR.commands.Login;
-import br.com.caiomoizes.snowCraftBR.commands.Register;
+import br.com.caiomoizes.scLogin.commands.Login;
+import br.com.caiomoizes.scLogin.commands.Register;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -16,18 +16,18 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Field;
 import java.util.List;
 
-public final class SnowCraftBR extends JavaPlugin {
+public final class SCLogin extends JavaPlugin {
 
-    private static SnowCraftBR instance;
+    private static SCLogin instance;
 
     private CustomConfig users;
 
-    public static SnowCraftBR getInstance() {
+    public static SCLogin getInstance() {
         return instance;
     }
 
-    public static void setInstance(SnowCraftBR instance) {
-        SnowCraftBR.instance = instance;
+    public static void setInstance(SCLogin instance) {
+        SCLogin.instance = instance;
     }
 
     public CustomConfig getUsers() {

@@ -1,13 +1,13 @@
-package br.com.caiomoizes.snowCraftBR.api;
+package br.com.caiomoizes.scLogin.api;
 
-import br.com.caiomoizes.snowCraftBR.SnowCraftBR;
+import br.com.caiomoizes.scLogin.SCLogin;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class LoginAPI {
-    public static SnowCraftBR snowcraft = SnowCraftBR.getInstance();
+    public static SCLogin snowcraft = SCLogin.getInstance();
 
     private static List<Player> loggedInPlayers = new ArrayList<>();
 

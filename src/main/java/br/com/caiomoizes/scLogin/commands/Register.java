@@ -1,6 +1,6 @@
-package br.com.caiomoizes.snowCraftBR.commands;
+package br.com.caiomoizes.scLogin.commands;
 
-import br.com.caiomoizes.snowCraftBR.api.LoginAPI;
+import br.com.caiomoizes.scLogin.api.LoginAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;

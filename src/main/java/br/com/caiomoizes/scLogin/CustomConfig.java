@@ -1,4 +1,4 @@
-package br.com.caiomoizes.snowCraftBR;
+package br.com.caiomoizes.scLogin;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
